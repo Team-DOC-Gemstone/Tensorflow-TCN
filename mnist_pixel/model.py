@@ -1,6 +1,5 @@
 import numpy as np
 import tensorflow as tf
-tf.enable_eager_execution()
 import sys
 sys.path.append("..")
 from tcn import TemporalConvNet

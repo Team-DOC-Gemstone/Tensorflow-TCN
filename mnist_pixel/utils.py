@@ -1,6 +1,5 @@
 import numpy as np
-import tensorflow as tf 
-tf.enable_eager_execution()
+import tensorflow as tf
 from keras.utils import to_categorical
 
 def data_generator(permute=False):

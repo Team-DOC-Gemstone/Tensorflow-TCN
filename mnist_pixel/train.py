@@ -3,7 +3,6 @@ from model import TCN
 from utils import data_generator
 import numpy as np
 import tensorflow as tf
-tf.enable_eager_execution()
 
 parser = argparse.ArgumentParser(description='Sequence Modeling - The Mnist Pixel Problem')
 parser.add_argument('--batch_size', type=int, default=32, metavar='N', help='batch size (default: 32)')
@@ -45,9 +44,9 @@ dropout = args.dropout
 model = TCN(n_classes, channel_sizes, kernel_size=kernel_size, dropout=dropout)
 
 # optimizer
-optimizer = tf.train.AdamOptimizer(lr)
+optimizer = tf.keras.optimizers.Adam(lr)
 
-# run 
+# run
 for epoch in range(epochs):
     for batch, (train_x, train_y) in enumerate(train_dataset):
         # assert train_x.shape == (batch_size, seq_length, 1)
@@ -60,11 +59,11 @@ for epoch in range(epochs):
         # gradient
         gradient = tape.gradient(loss, model.trainable_variables)
         if clip != -1:
-            gradient, _ = tf.clip_by_global_norm(gradient, clip)  
+            gradient, _ = tf.clip_by_global_norm(gradient, clip)
         optimizer.apply_gradients(zip(gradient, model.trainable_variables))
         if batch % 100 == 0:
             print("Batch:", batch, ", Train loss:", loss.numpy())
-        
+
     # Eval Acc
     eval_labels =  model(test_data, training=False)
     eval_acc = np.mean(np.argmax(eval_labels.numpy(), axis=1) == test_labels.numpy())
@@ -103,5 +102,5 @@ for epoch in range(epochs):
 
 # eval_acc = np.mean(np.argmax(eval_labels.numpy(), axis=1) == test_labels.numpy())
 # print("Eval acc:", eval_acc*100, "%\n---\n")
-      
+
 

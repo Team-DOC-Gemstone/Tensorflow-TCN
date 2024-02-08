@@ -1,14 +1,12 @@
 # -*- coding: utf-8 -*-
 import numpy as np
 import tensorflow as tf
-import tensorflow.contrib.eager as tfe 
-tf.enable_eager_execution()
 
 layers = tf.keras.layers
 
 class TemporalBlock(tf.keras.Model):
-	def __init__(self, dilation_rate, nb_filters, kernel_size, 
-				       padding, dropout_rate=0.0): 
+	def __init__(self, dilation_rate, nb_filters, kernel_size,
+				       padding, dropout_rate=0.0):
 		super(TemporalBlock, self).__init__()
 		init = tf.keras.initializers.RandomNormal(mean=0.0, stddev=0.01)
 		assert padding in ['causal', 'same']
@@ -19,16 +17,16 @@ class TemporalBlock(tf.keras.Model):
 		self.batch1 = layers.BatchNormalization(axis=-1)
 		self.ac1 = layers.Activation('relu')
 		self.drop1 = layers.Dropout(rate=dropout_rate)
-		
+
 		# block2
 		self.conv2 = layers.Conv1D(filters=nb_filters, kernel_size=kernel_size,
 						           dilation_rate=dilation_rate, padding=padding, kernel_initializer=init)
-		self.batch2 = layers.BatchNormalization(axis=-1)		
+		self.batch2 = layers.BatchNormalization(axis=-1)
 		self.ac2 = layers.Activation('relu')
 		self.drop2 = layers.Dropout(rate=dropout_rate)
 
-		# 为了防止维度不一致使用 1*1 卷积在channel处进行匹配  
-		self.downsample = layers.Conv1D(filters=nb_filters, kernel_size=1, 
+		# 为了防止维度不一致使用 1*1 卷积在channel处进行匹配
+		self.downsample = layers.Conv1D(filters=nb_filters, kernel_size=1,
 									    padding='same', kernel_initializer=init)
 		self.ac3 = layers.Activation('relu')
 
@@ -71,7 +69,7 @@ class TemporalConvNet(tf.keras.Model):
         num_levels = len(num_channels)
         for i in range(num_levels):
             dilation_rate = 2 ** i                  # exponential growth
-            model.add(TemporalBlock(dilation_rate, num_channels[i], kernel_size, 
+            model.add(TemporalBlock(dilation_rate, num_channels[i], kernel_size,
                       padding='causal', dropout_rate=dropout))
         self.network = model
 
